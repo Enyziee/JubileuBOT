@@ -1,20 +1,31 @@
 {
-  "name": "jubileujs",
+  "name": "jubileubot",
   "version": "1.0.0",
-  "description": "BOT de música e mais algumas coisas",
+  "description": "Essa é uma nova versão do BOT [Jubileu] feita em JavaScript e como algumas impletações novas",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Enyziee",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enyziee/JubileuBOT.git"
+  },
+  "keywords": [],
+  "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Enyziee/JubileuBOT/issues"
+  },
+  "homepage": "https://github.com/Enyziee/JubileuBOT#readme",
   "dependencies": {
-    "@discordjs/builders": "^0.13.0",
-    "@discordjs/rest": "^0.4.1",
-    "discord-api-types": "^0.32.0",
-    "discord.js": "^13.6.0"
+    "@discordjs/builders": "^0.15.0",
+    "@discordjs/rest": "^0.5.0",
+    "@discordjs/voice": "^0.10.0",
+    "discord-api-types": "^0.35.0",
+    "discord.js": "^13.8.1",
+    "libsodium-wrappers": "^0.7.10"
   },
   "devDependencies": {
-    "eslint": "^8.14.0"
+    "eslint": "^8.18.0"
   }
 }
