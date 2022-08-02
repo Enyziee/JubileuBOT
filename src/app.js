@@ -1,15 +1,15 @@
 const fs = require('node:fs');
-const path = require('node:path');
 const { Client, Intents, Collection } = require('discord.js');
 const { token } = require('./config.json');
 
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, 'GUILD_VOICE_STATES'] });
 
 
 // Comandos
 client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandPath = (__dirname + '/commands');
+const commandFiles = fs.readdirSync(commandPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
@@ -18,18 +18,19 @@ for (const file of commandFiles) {
 
 
 // Eventos
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('js'));
+const eventsPath = (__dirname + '/events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
-    const filePath = path.join(eventsPath, file);
-    const event = require(filePath);
+    const event = require(`${eventsPath}/${file}`);
     if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
     }
     else {
-        client.on(event.name, (...args) => event.execute(...args, client));
+        client.on(event.name, (...args) => event.execute(...args));
     }
 }
+
+client.guildsPlaylists = new Collection();
 
 client.login(token);

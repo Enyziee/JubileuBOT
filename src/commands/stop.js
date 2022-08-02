@@ -9,8 +9,8 @@ module.exports = {
     async execute(interaction) {
         const connection = getVoiceConnection(interaction.guildId);
 
-        console.log(connection);
-
         connection.destroy();
+
+        await interaction.reply('Destuido');
     },
 };
