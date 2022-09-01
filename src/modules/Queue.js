@@ -5,7 +5,7 @@ module.exports = class Queue {
     }
 
     isEmpty() {
-        return this.current == null;
+        return this.songs.length === 0;
     }
 
     enqueue(song) {
@@ -17,6 +17,10 @@ module.exports = class Queue {
         const returnSong = this.songs.shift();
         this.current = returnSong;
         return returnSong;
+    }
+
+    getSongs() {
+        return this.songs;
     }
 };
 

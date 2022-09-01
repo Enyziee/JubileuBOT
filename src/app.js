@@ -25,12 +25,15 @@ for (const file of eventFiles) {
     const event = require(`${eventsPath}/${file}`);
     if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
-    }
-    else {
+    } else {
         client.on(event.name, (...args) => event.execute(...args));
     }
 }
 
-client.guildsPlaylists = new Collection();
+client.on('error', error => {
+    console.error(error);
+});
+
+client.musicPlayers = new Collection();
 
 client.login(token);

@@ -2,5 +2,4 @@ node_modules
 .env
 config.json
 .vscode
-asd/play.js
-audio/gaay.mp3
+extras/
