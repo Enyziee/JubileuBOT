@@ -1,10 +1,10 @@
 const fs = require('node:fs');
-const { Client, Intents, Collection } = require('discord.js');
-const { token } = require('./config.json');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
 
+require('dotenv').config();
+const token = process.env.token;
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, 'GUILD_VOICE_STATES'] });
-
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
 
 // Comandos
 client.commands = new Collection();
