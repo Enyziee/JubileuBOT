@@ -1,11 +1,8 @@
 const { joinVoiceChannel, getVoiceConnection, createAudioPlayer, createAudioResource, NoSubscriberBehavior, AudioPlayerStatus } = require('@discordjs/voice');
 const play = require('play-dl');
 const Queue = require('../modules/Queue');
-const { voiceConnectionDebug } = require('../config.json');
-
 
 class MusicPlayer {
-
     constructor(guildId, voiceAdapterCreator) {
         this.guildId = guildId;
         this.voiceAdapterCreator = voiceAdapterCreator;
@@ -22,16 +19,15 @@ class MusicPlayer {
      */
     joinVoiceChannel(channelId) {
 
-        if (getVoiceConnection(this.guildId) == undefined) {
+        // TO-DO Criar linstener para verificar erros na conexão de voz
 
+        if (getVoiceConnection(this.guildId) == undefined) {
             joinVoiceChannel({
                 channelId: channelId,
                 guildId: this.guildId,
                 adapterCreator: this.voiceAdapterCreator,
                 selfDeaf: 'false',
-                debug: voiceConnectionDebug,
             });
-
         }
     }
 
@@ -55,40 +51,71 @@ class MusicPlayer {
      * when the resource is finished playing, it checks if the playlist is empty. If it's not empty, it
      * plays the next resource
      */
-    async play() {
+    async play(query) {
 
         const voiceConnection = getVoiceConnection(this.guildId);
 
+        if (this.isPlaying == true) {
 
-        const audioPlayer = createAudioPlayer({
-            behaviors: {
-                noSubscriber: NoSubscriberBehavior.Pause,
-            },
-        });
+            const videoInfo = await play.video_info(query);
 
-        voiceConnection.subscribe(audioPlayer);
+            this.playlist.enqueue(videoInfo);
+            return;
+        }
 
-        audioPlayer.play(await this.getResource());
+        if (this.audioPlayer == null) {
+            this.audioPlayer = createAudioPlayer({
+                behaviors: {
+                    noSubscriber: NoSubscriberBehavior.Pause,
+                },
+            });
+        }
 
-        this.isPlaying = true;
+        let resource;
 
-        audioPlayer.on('stateChange', (oldState, newState) => {
+        voiceConnection.subscribe(this.audioPlayer);
+
+        if (this.playlist.size() < 1) {
+            const stream = await play.stream(query);
+            resource = createAudioResource(stream.stream, {
+                inputType: stream.type,
+            });
+            this.audioPlayer.play(resource);
+            this.isPlaying = true;
+
+        } else {
+            this.audioPlayer.play(await this.getResource());
+            this.isPlaying = true;
+        }
+
+        this.setLinstener();
+
+    }
+
+    setLinstener() {
+        this.audioPlayer.on('stateChange', (oldState, newState) => {
             if (oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle) {
+                console.log('A música acabou');
+
                 this.isPlaying = false;
 
                 if (!this.playlist.isEmpty()) {
                     this.getResource().then(resource => {
-                        audioPlayer.play(resource);
+                        this.audioPlayer.play(resource);
+                        this.isPlaying = true;
                     });
                 }
 
             }
         });
-
     }
 
     nextSong() {
-        console.log();
+        const song = this.playlist.dequeue;
+        
+
+
+        return song
     }
 
     async addSong(videoInfo) {
@@ -114,7 +141,6 @@ function getMusicPlayer(client, guildId, voiceAdapterCreator) {
     }
 
     return client.musicPlayers.get(guildId);
-
 
 }
 

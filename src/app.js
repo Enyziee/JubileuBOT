@@ -16,7 +16,6 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
-
 // Eventos
 const eventsPath = (__dirname + '/events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
@@ -34,6 +33,6 @@ client.on('error', error => {
     console.error(error);
 });
 
-client.musicPlayers = new Collection();
+client.players = new Collection();
 
 client.login(token);
