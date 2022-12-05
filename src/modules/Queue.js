@@ -1,26 +1,28 @@
 module.exports = class Queue {
     constructor() {
-        this.songs = [];
-        this.current = null;
+        this.queue = [];
     }
 
-    isEmpty() {
-        return this.songs.length === 0;
-    }
-
-    enqueue(song) {
-        this.songs.push(song);
-
+    enqueue(item) {
+        this.queue.push(item);
     }
 
     dequeue() {
-        const returnSong = this.songs.shift();
-        this.current = returnSong;
-        return returnSong;
+        if (this.queue.length < 1) {
+            return null;
+        }
+        return this.queue.shift();
     }
 
-    getSongs() {
-        return this.songs;
+    display() {
+        console.log(this.queue);
+    }
+
+    size() {
+        return this.queue.length;
+    }
+
+    isEmpty() {
+        return this.size() < 1;
     }
 };
-
