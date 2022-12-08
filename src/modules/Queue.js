@@ -15,7 +15,7 @@ module.exports = class Queue {
     }
 
     display() {
-        console.log(this.queue);
+        return this.queue.values();
     }
 
     size() {
