@@ -87,9 +87,6 @@ class MusicPlayer {
 
     async playNow(query) {
         const info = await play.video_info(query);
-
-        console.log(info);
-
         const resource = await this.createResource(info);
 
         this.preparePlayer();
