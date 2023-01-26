@@ -25,4 +25,8 @@ module.exports = class Queue {
     isEmpty() {
         return this.size() < 1;
     }
+
+    clear() {
+        this.queue = [];
+    }
 };
