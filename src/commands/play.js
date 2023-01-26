@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction } = require('discord.js');
 const { MusicPlayer } = require('../modules/MusicPlayer');
-const play = require('play-dl');
+
+const { Interaction } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,14 +14,13 @@ module.exports = {
         ),
     /**
      * @param {Interaction} interaction
-     */
+    */
     async execute(interaction) {
 
         const client = interaction.client;
         const guild = interaction.guild;
         const member = interaction.member;
         const query = interaction.options.getString('url');
-
 
         // verificar se o usuário está em um canal de voz
         if (member.voice.channel == null) {
@@ -32,24 +31,33 @@ module.exports = {
 
         // Verifica se a guilda já tem um player
         let player = null;
-
         if (client.players.get(guild.id)) {
-            console.log('O servidor já tem um player, retornando ele...');
             player = client.players.get(guild.id);
         } else {
-            console.log('O servidor não tem um player, criando um...');
             player = new MusicPlayer(guild.id, guild.voiceAdapterCreator);
             client.players.set(guild.id, player);
         }
 
-        player.joinVoiceChannel(member.voice.channel.id);
+        player.joinVC(member.voice.channel.id);
 
-        player.play(query);
-
-        const videoInfo = await play.video_basic_info(query);
+        let videoInfo;
+        let msg;
 
         try {
-            interaction.reply(`Reproduzindo agora: \`${videoInfo.video_details.title}\``);
+            if (player.playing == false) {
+                videoInfo = await player.playNow(query);
+                msg = 'Reproduzindo agora: ';
+            } else {
+                videoInfo = await player.addSong(query);
+                msg = 'Adicionado a fila: ';
+            }
+        } catch (error) {
+            interaction.reply(`Ocorreu um problema... \`${error.message}\``);
+            return;
+        }
+
+        try {
+            interaction.reply(`${msg} \`${videoInfo.video_details.title}\``);
         } catch (error) {
             console.error(error);
         }
