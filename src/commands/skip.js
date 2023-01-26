@@ -35,6 +35,6 @@ module.exports = {
 
         const videoInfo = await player.playNext();
 
-        await interaction.reply(`Reproduzindo agora: ${videoInfo.video_details.title}`);
+        await interaction.reply(`Reproduzindo agora: \`${videoInfo.video_details.title}\``);
     },
 };
