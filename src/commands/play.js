@@ -52,7 +52,11 @@ module.exports = {
                 msg = 'Adicionado a fila: ';
             }
         } catch (error) {
-            interaction.reply(`Ocorreu um problema... \`${error.message}\``);
+            try {
+                interaction.reply(`Ocorreu um problema... \`${error.message}\``);
+            } catch (error1) {
+                console.log('problem');
+            }
             return;
         }
 

@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY package.json ./
 
 RUN apk add build-base make autoconf automake libtool libsodium python3
-RUN npm install
+RUN npm install -p
 
 COPY . .
 

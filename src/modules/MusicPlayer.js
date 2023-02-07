@@ -76,12 +76,12 @@ class MusicPlayer {
                 this.playing = false;
                 setTimeout(this.timeout, 30000, this.guildId);
             }
+        });
 
-            this.player.on('error', async () => {
-                if (this.hasNext) {
-                    await this.playNext();
-                }
-            });
+        this.player.on('error', async () => {
+            if (this.hasNext) {
+                await this.playNext();
+            }
         });
     }
 
