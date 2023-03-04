@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MusicPlayer } = require('../modules/MusicPlayer');
 
-const { Interaction } = require('discord.js');
+const { CommandInteraction } = require('discord.js');
+const { timeParsed } = require('../modules/utils');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,7 +14,7 @@ module.exports = {
                 .setRequired(true),
         ),
     /**
-     * @param {Interaction} interaction
+     * @param {CommandInteraction} interaction
     */
     async execute(interaction) {
 
@@ -24,7 +25,8 @@ module.exports = {
 
         // verificar se o usuário está em um canal de voz
         if (member.voice.channel == null) {
-            console.log('Membro não está em um canal de voz!');
+            console.log(`${timeParsed()}The member is not in a voice channel`);
+            // eslint-disable-next-line no-undef
             interaction.reply('Você não está em um canal de voz', ephemeral = true);
             return;
         }
