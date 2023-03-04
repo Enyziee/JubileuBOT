@@ -1,7 +1,9 @@
+const { timeParsed } = require('../modules/utils');
+
 module.exports = {
     name: 'ready',
     once: true,
     execute(client) {
-        console.log(`Logado como '${client.user.tag}'`);
+        console.log(`${timeParsed()}Logged with '${client.user.tag}'`);
     },
 };
