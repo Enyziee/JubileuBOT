@@ -3,7 +3,7 @@ const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { timeParsed } = require('./modules/utils');
 
 require('dotenv').config();
-const token = process.env.token;
+const token = process.env.tokenProd;
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
 
@@ -44,9 +44,9 @@ client.on('error', error => {
     console.error(error);
 });
 
-// client.on('debug', message => {
-//     console.debug(message);
-// });
+client.on('debug', message => {
+    console.debug(message);
+});
 
 client.players = new Collection();
 

@@ -4,7 +4,8 @@
   "description": "Essa é uma nova versão do BOT [Jubileu] feita em JavaScript e como algumas impletações novas",
   "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
   },
   "repository": {
     "type": "git",
@@ -18,12 +19,12 @@
   },
   "homepage": "https://github.com/Enyziee/JubileuBOT#readme",
   "dependencies": {
-    "@discordjs/builders": "^1.4.0",
+    "@discordjs/builders": "^1.5.0",
     "@discordjs/opus": "^0.9.0",
-    "@discordjs/rest": "^1.5.0",
-    "@discordjs/voice": "^0.14.0",
+    "@discordjs/rest": "^1.6.0",
+    "@discordjs/voice": "^0.15.0",
     "discord-api-types": "^0.37.35",
-    "discord.js": "^14.7.1",
+    "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "ffmpeg-static": "^5.1.0",
     "opusscript": "^0.0.8",
@@ -32,6 +33,6 @@
     "ytdl-core": "^4.11.2"
   },
   "devDependencies": {
-    "eslint": "^8.34.0"
+    "eslint": "^8.36.0"
   }
 }

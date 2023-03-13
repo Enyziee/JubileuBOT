@@ -117,6 +117,8 @@ class MusicPlayer {
 
     async addSong(query) {
         const info = await play.video_info(query);
+
+
         this.playlist.enqueue(info);
 
         return info;
