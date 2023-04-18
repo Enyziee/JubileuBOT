@@ -4,6 +4,8 @@ const { MusicPlayer } = require('../modules/MusicPlayer');
 const { CommandInteraction } = require('discord.js');
 const { timeParsed } = require('../modules/utils');
 
+const playdl = require('play-dl');
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
@@ -28,6 +30,17 @@ module.exports = {
             console.log(`${timeParsed()}The member is not in a voice channel`);
             // eslint-disable-next-line no-undef
             interaction.reply('Você não está em um canal de voz', ephemeral = true);
+            return;
+        }
+
+        const validQuery = playdl.yt_validate(query);
+
+        if (validQuery == false || validQuery == 'search') {
+            try {
+                interaction.reply('URL Inválida!');
+            } catch (error) {
+                console.error(error);
+            }
             return;
         }
 
