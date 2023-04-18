@@ -45,7 +45,7 @@ client.on('error', error => {
 });
 
 client.on('debug', message => {
-    console.debug(message);
+    // console.debug(message);
 });
 
 client.players = new Collection();

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const { Interaction } = require('discord.js');
+const { CommandInteraction } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,7 +8,7 @@ module.exports = {
         .setDescription('Avança para a próxima música'),
 
     /**
-     * @param {Interaction} interaction
+     * @param {CommandInteraction} interaction
      */
     async execute(interaction) {
         const client = interaction.client;
