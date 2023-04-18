@@ -1,6 +1,7 @@
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, entersState, createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 const play = require('play-dl');
 const Queue = require('../modules/Queue');
+const { timeParsed } = require('./utils');
 
 class MusicPlayer {
     constructor(guildId, voiceAdapterCreator) {
@@ -66,13 +67,13 @@ class MusicPlayer {
         connection.subscribe(this.player);
 
         this.player.on('stateChange', async (oldState, newState) => {
-
             if (oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle) {
                 if (!this.playlist.isEmpty()) {
                     await this.playNext();
                     return;
                 }
 
+                console.log(`${timeParsed()}Start timeout counter`);
                 this.playing = false;
                 setTimeout(this.timeout, 30000, this.guildId);
             }
@@ -133,8 +134,16 @@ class MusicPlayer {
     }
 
     timeout(guildId) {
+        if (this.playing) {
+            console.log(`${timeParsed()}Stil Playing`);
+            return;
+        }
+
+        console.log(`${timeParsed()}Player timeout`);
         const connection = getVoiceConnection(guildId);
-        connection.destroy();
+        if (connection) {
+            connection.destroy();
+        }
     }
 
     destroy() {
