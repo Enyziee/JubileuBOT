@@ -1,34 +1,72 @@
-const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, entersState, createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
-const play = require('play-dl');
-const Queue = require('../modules/Queue');
-const { timeParsed } = require('./utils');
+import { DiscordGatewayAdapterCreator, joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, entersState, createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayerStatus, VoiceConnection, AudioPlayer } from '@discordjs/voice';
+
+import play, { InfoData } from 'play-dl';
+import Queue from '../modules/Queue';
+import { timeParsed } from './utils';
 
 class MusicPlayer {
-    constructor(guildId, voiceAdapterCreator) {
+    guildId: string;
+    voiceAdapterCreator: DiscordGatewayAdapterCreator;
+    playing: boolean;
+    player: AudioPlayer;
+    playlist: Queue;
+    timeoutId: NodeJS.Timeout | undefined;
+
+    constructor(guildId: string, voiceAdapterCreator: DiscordGatewayAdapterCreator) {
         this.guildId = guildId;
         this.voiceAdapterCreator = voiceAdapterCreator;
 
         this.playing = false;
-        this.player = null;
 
         this.playlist = new Queue();
+
+        this.player = this.audioPlayerCreator();
+    }
+
+    audioPlayerCreator(): AudioPlayer {
+        let player = createAudioPlayer({
+            behaviors: {
+                noSubscriber: NoSubscriberBehavior.Pause,
+            },
+        });
+
+        player.on('stateChange', async (oldState, newState) => {
+            if (oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle) {
+                if (!this.playlist.isEmpty()) {
+                    await this.playNext();
+                    return;
+                }
+
+                console.log(`${timeParsed()}Start timeout counter`);
+                this.playing = false;
+                this.timeoutId = setTimeout(this.timeout, 30000, this.guildId);
+            }
+        });
+
+        player.on('error', async () => {
+            if (this.hasNext()) {
+                await this.playNext();
+            } else {
+                this.destroy()
+            }
+        });
+
+        return player;
     }
 
     /**
      * It joins a voice channel and if it disconnects, it tries to reconnect to the same channel
      * @param channelId - The ID of the voice channel to join
      */
-    async joinVC(channelId) {
+    async joinVC(channelId: string) {
 
-        let connection = getVoiceConnection(this.guildId);
-
-        if (connection == undefined) {
+        let connection: VoiceConnection;
+        if (!getVoiceConnection(this.guildId)) {
             connection = joinVoiceChannel({
                 channelId: channelId,
                 guildId: this.guildId,
                 adapterCreator: this.voiceAdapterCreator,
                 selfDeaf: false,
-                // debug: true,
             });
 
             connection.on(VoiceConnectionStatus.Disconnected, async () => {
@@ -46,51 +84,16 @@ class MusicPlayer {
 
             connection.on('error', error => {
                 console.error(error);
-                connection.destroy();
+                this.destroy();
             });
 
-            connection.on('debug', msg => {
-                console.log(`[DEBUG] ${msg}`);
-            });
+            connection.subscribe(this.player);
         }
-    }
+    }    
 
-    preparePlayer() {
-        const connection = getVoiceConnection(this.guildId);
-
-        this.player = createAudioPlayer({
-            behaviors: {
-                noSubscriber: NoSubscriberBehavior.Pause,
-            },
-        });
-
-        connection.subscribe(this.player);
-
-        this.player.on('stateChange', async (oldState, newState) => {
-            if (oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle) {
-                if (!this.playlist.isEmpty()) {
-                    await this.playNext();
-                    return;
-                }
-
-                console.log(`${timeParsed()}Start timeout counter`);
-                this.playing = false;
-                setTimeout(this.timeout, 30000, this.guildId);
-            }
-        });
-
-        this.player.on('error', async () => {
-            if (this.hasNext) {
-                await this.playNext();
-            }
-        });
-    }
-
-    async playNow(query) {
+    async playNow(query: string) {
         const info = await play.video_info(query);
         const resource = await this.createResource(info);
-
-        this.preparePlayer();
 
         this.player.play(resource);
         this.playing = true;
@@ -107,7 +110,7 @@ class MusicPlayer {
         return nextInfo;
     }
 
-    async createResource(videoInfo) {
+    async createResource(videoInfo: InfoData) {
         const source = await play.stream_from_info(videoInfo);
         const resource = createAudioResource(source.stream, {
             inputType: source.type,
@@ -116,7 +119,7 @@ class MusicPlayer {
         return resource;
     }
 
-    async addSong(query) {
+    async addSong(query: string) {
         const info = await play.video_info(query);
 
 
@@ -133,7 +136,7 @@ class MusicPlayer {
         return this.playlist;
     }
 
-    timeout(guildId) {
+    timeout(guildId: string) {
         if (this.playing) {
             console.log(`${timeParsed()}Stil Playing`);
             return;
@@ -148,11 +151,12 @@ class MusicPlayer {
 
     destroy() {
         const connection = getVoiceConnection(this.guildId);
-        connection.destroy();
         this.playing = false;
         this.playlist.clear();
+        if (connection != undefined) {
+            connection.destroy();
+        }
     }
-
 }
 
 module.exports = { MusicPlayer };

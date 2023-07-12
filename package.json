@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
+    "start": "tsc && node dist/app.js"
   },
   "repository": {
     "type": "git",
@@ -27,9 +27,10 @@
     "discord.js": "^14.9.0",
     "dotenv": "^16.0.3",
     "ffmpeg-static": "^5.1.0",
-    "opusscript": "^0.0.8",
+    "opusscript": "^0.1.0",
     "play-dl": "^1.9.6",
     "sodium": "^3.0.2",
+    "typescript": "^5.1.6",
     "ytdl-core": "^4.11.4"
   },
   "devDependencies": {
