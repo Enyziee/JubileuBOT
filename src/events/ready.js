@@ -1,4 +1,4 @@
-const { timeParsed } = require('../modules/utils');
+const { timeParsed } = require('../utils/utils');
 
 module.exports = {
     name: 'ready',
