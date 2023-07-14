@@ -5,14 +5,14 @@
   "main": "src/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node dist/app.js"
+    "start": "tsc && node ./out/app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Enyziee/JubileuBOT.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Enyziee",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Enyziee/JubileuBOT/issues"
@@ -30,10 +30,13 @@
     "opusscript": "^0.1.0",
     "play-dl": "^1.9.6",
     "sodium": "^3.0.2",
-    "typescript": "^5.1.6",
     "ytdl-core": "^4.11.4"
   },
   "devDependencies": {
-    "eslint": "^8.38.0"
+    "@types/node": "^20.4.2",
+    "@typescript-eslint/eslint-plugin": "6.0.0",
+    "@typescript-eslint/parser": "6.0.0",
+    "eslint": "^8.0.1",
+    "typescript": "^5.1.6"
   }
 }
