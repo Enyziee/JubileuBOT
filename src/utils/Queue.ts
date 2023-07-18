@@ -1,15 +1,16 @@
 export default class Queue {
+    queue: Array<string>;
     constructor() {
         this.queue = [];
     }
 
-    enqueue(item) {
+    enqueue(item: string) {
         this.queue.push(item);
     }
 
     dequeue() {
         if (this.queue.length < 1) {
-            return null;
+            return undefined;
         }
         return this.queue.shift();
     }

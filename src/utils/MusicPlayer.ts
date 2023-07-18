@@ -1,7 +1,7 @@
 import { AudioPlayer, AudioPlayerError, AudioPlayerStatus, NoSubscriberBehavior, VoiceConnection, VoiceConnectionStatus, createAudioPlayer, createAudioResource, entersState, getVoiceConnection, joinVoiceChannel } from '@discordjs/voice';
-import Queue from './Queue';
 import { Guild } from 'discord.js';
 import playdl, { InfoData } from 'play-dl';
+import Queue from './Queue.js';
 
 export class MusicPlayer {
     private playlist: Queue;
@@ -55,8 +55,12 @@ export class MusicPlayer {
     }
 
     private async playNext() {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const query = this.playlist.dequeue();
+        const query: string | undefined = this.playlist.dequeue();
+        
+        if (query == undefined) {
+            return;
+        }
+
         const info = await this.playNow(query);
         return info;
     }
