@@ -1,12 +1,8 @@
 import { ApplicationCommandDataResolvable, Client, ClientEvents, Collection, GatewayIntentBits } from "discord.js";
-import { readCommands } from "../utils/Helpers.js";
-import { CommandType, ComponentsButton, ComponentsModal, ComponentsSelect } from "./Command.js";
-import path from "path";
-import { fileURLToPath } from "url";
 import { readdirSync } from "fs";
+import path from "path";
+import { CommandType, ComponentsButton, ComponentsModal, ComponentsSelect } from "./Command.js";
 import { EventType } from "./Events.js";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class ExtendedClient extends Client {
     public commands: Collection<string, CommandType> = new Collection();
