@@ -1,13 +1,13 @@
-FROM node:18-alpine
+FROM node:lts-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
 COPY package.json ./
 
 RUN apk add build-base make autoconf automake libtool libsodium python3
 
-RUN npm install -p
+RUN yarn install --production 
 
-COPY . .
+COPY out/ .
 
-CMD [ "node", "./src/app.js" ]
+CMD [ "node", "./app.js" ]
