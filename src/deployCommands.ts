@@ -29,10 +29,12 @@ function postCommands(slashCommands: CommandType[]) {
     console.log(`Started refreshing ${slashCommands.length} application (/) commands.`);
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data = rest.put(
+    rest.put(
         Routes.applicationGuildCommands(process.env.clientid!, process.env.guildid!),
         { body: slashCommands },
-    ).then((data) => { return data; }).catch(err => {
+    ).then((data) => {
+        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    }).catch(err => {
         console.log(err);
     });
 }
