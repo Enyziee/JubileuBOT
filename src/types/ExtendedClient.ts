@@ -1,8 +1,8 @@
 import { ApplicationCommandDataResolvable, Client, ClientEvents, Collection, GatewayIntentBits } from "discord.js";
 import { readdirSync } from "fs";
-import path from "path";
 import { CommandType, ComponentsButton, ComponentsModal, ComponentsSelect } from "./Command.js";
 import { EventType } from "./Events.js";
+import path from "path";
 
 export class ExtendedClient extends Client {
     public commands: Collection<string, CommandType> = new Collection();
@@ -27,10 +27,10 @@ export class ExtendedClient extends Client {
     }
 
     private registerModules() {
-        const slashCommands: Array<ApplicationCommandDataResolvable> = new Array();
-
         const commandPath = path.join(__dirname, '..', 'commands');
         const condition = (file: string) => file.endsWith('.js');
+
+        const slashCommands: Array<ApplicationCommandDataResolvable> = [];
 
         readdirSync(commandPath).filter(condition).forEach(async fileName => {
 
