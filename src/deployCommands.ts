@@ -1,7 +1,7 @@
 import { REST, Routes } from "discord.js";
+import 'dotenv/config';
 import { readdirSync } from "fs";
 import path from "node:path";
-import 'dotenv/config';
 import { CommandType } from "./types/Command";
 
 const commandPath = path.join(__dirname, 'commands');
@@ -13,8 +13,9 @@ const rest = new REST().setToken(process.env.token!);
 Promise.all(commandsNames.map((fileName) => {
     return import(`${commandPath}/${fileName}`);
 })).then((resolvedCommands => {
-    resolvedCommands.forEach((resCommand => {
-        slashCommands.push(resCommand.default.default);
+    resolvedCommands.forEach(((resCommand) => {
+        const command = JSON.stringify(resCommand?.default);
+        // slashCommands.push(JSON.parse(command));
     }));
 
     console.log(slashCommands);
@@ -33,7 +34,7 @@ function postCommands(slashCommands: CommandType[]) {
         Routes.applicationGuildCommands(process.env.clientid!, process.env.guildid!),
         { body: slashCommands },
     ).then((data) => {
-        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+        console.log(`Successfully reloaded application (/) commands.`);
     }).catch(err => {
         console.log(err);
     });
