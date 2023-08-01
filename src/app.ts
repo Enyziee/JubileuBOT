@@ -7,11 +7,11 @@
 
 import fs from 'node:fs';
 import { ApplicationCommand, Client, Collection, GatewayIntentBits } from 'discord.js';
-import { timeParsed } from './utils/utils';
-import { MusicPlayer } from './utils/MusicPlayer';
+import { timeParsed } from './utils/utils.js';
+import { MusicPlayer } from './utils/MusicPlayer.js';
 
 require('dotenv').config();
-const token = process.env.tokenTest;
+const token = process.env.token;
 
 export const client = Object.assign(
     new Client({

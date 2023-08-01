@@ -3,11 +3,14 @@ FROM node:lts-alpine
 WORKDIR /usr/app
 
 COPY package.json ./
-
 RUN apk add build-base make autoconf automake libtool libsodium python3
+RUN yarn install
 
-RUN yarn install --production 
+COPY src/ src/
+COPY tsconfig.json .
+RUN yarn global add typescript
+RUN tsc
 
-COPY out/ .
+ENV NODE_ENV=production
 
-CMD [ "node", "./app.js" ]
+CMD [ "node", "./dist/app.js" ]
