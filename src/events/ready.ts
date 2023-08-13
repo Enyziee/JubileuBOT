@@ -13,6 +13,5 @@ export default new Event({
         console.log(`Buttons loaded: ${buttons.size}`);
         console.log(`Select Menus loaded: ${selects.size}`);
         console.log(`Modals loaded: ${modals.size}`);
-
     },
 });
