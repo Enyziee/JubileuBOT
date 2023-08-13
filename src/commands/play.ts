@@ -1,66 +1,54 @@
-import { ActionRowBuilder } from "@discordjs/builders";
-import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, Collection, Guild, GuildMember } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, GuildMember } from "discord.js";
+import { client } from "../app.js";
 import { Command } from "../types/Command.js";
 import { MusicPlayer } from "../utils/MusicPlayer.js";
-import { client } from "../app.js";
 
 export default new Command({
     name: "play",
-    description: "play a song",
+    description: "Reproduz um vídeo do Youtube",
     type: ApplicationCommandType.ChatInput,
     options: [{
         name: "query",
-        description: "url",
+        description: "Link do Youtube",
         required: true,
         type: ApplicationCommandOptionType.String
     }],
 
-    run({ interaction, options }) {
-
+    async run({ interaction, options }) {
         const member = interaction.member as GuildMember;
         const guild = interaction.guild!;
 
-        let player = client.players.get(guild.id);
-
         if (!member.voice.channel) {
-            interaction.reply({ content: "Sem voice channel!" });
+            await interaction.reply({ content: "Você não está em um canal de voz!", ephemeral: true });
             return;
         }
 
-        if (player == undefined) player = new MusicPlayer(guild);
+        let player = client.players.get(guild.id);
 
-        player.joinVoiceChannel(member.voice.channelId!);
+        if (player == undefined) {
+            player = new MusicPlayer(guild);
+            client.players.set(guild.id, player);
+            player.joinVoiceChannel(member.voice.channelId!);
+        }
 
-        const stopButton = new ButtonBuilder()
-            .setCustomId("stopButton")
-            .setLabel("Stop")
-            .setStyle(ButtonStyle.Primary);
+        player.on("destroy", () => {
+            console.log("Event emitter: destroy players");
+            client.players.delete(guild.id);
+        });
 
-        const row = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents([stopButton]);
+        if (player.playing) {
+            const info = await player.addToPlaylist(options.getString("query")!);
+            await interaction.reply({ content: `Adicionado a fila \`${info.video_details.title}\`` });
+            return;
+        }
 
-
-        interaction.reply({ ephemeral: true, content: "pong", components: [row] });
-    },
-    buttons: new Collection([
-        ["stopButton", async (interaction) => {
-            const member = interaction.member as GuildMember;
-
-            const player = client.players.get(interaction.guildId!);
-            player?.destroy();
-
-            interaction.update({ components: [] });
-        }]
-    ])
-});
-
-function getGuildPlayer(guild: Guild) {
-    let player = client.players.get(guild.id);
-
-    if (player == undefined) {
-        player = new MusicPlayer(guild);
-        client.players.set(guild.id, player);
+        try {
+            const info = await player.playNow(options.getString("query")!);
+            await interaction.reply({ content: `Reproduzingo agora: \`${info.video_details.title}\`` });
+        } catch (error) {
+            player.destroy();
+            await interaction.reply({ content: `Ocorreu algum problema \`${error}\`` });
+            console.error(error);
+        }
     }
-
-    return player;
-}
+});
