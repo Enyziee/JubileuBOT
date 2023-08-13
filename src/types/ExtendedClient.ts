@@ -1,9 +1,9 @@
 import { ApplicationCommandDataResolvable, Client, ClientEvents, Collection, GatewayIntentBits, Partials } from "discord.js";
 import { readdirSync } from "fs";
-import { CommandType, ComponentsButton, ComponentsModal, ComponentsSelect } from "./Command.js";
-import { EventType } from "./Events.js";
 import path from "path";
 import { MusicPlayer } from "../utils/MusicPlayer.js";
+import { CommandType, ComponentsButton, ComponentsModal, ComponentsSelect } from "./Command.js";
+import { EventType } from "./Events.js";
 
 export class ExtendedClient extends Client {
     public commands: Collection<string, CommandType> = new Collection();
@@ -72,14 +72,13 @@ export class ExtendedClient extends Client {
         const condition = (file: string) => file.endsWith('.js');
 
         readdirSync(eventPath).filter(condition).forEach(fileName => {
-            import(`../events/${fileName}`).then(command => {
-
-                const { name, once, run }: EventType<keyof ClientEvents> = command.default;
+            import(`../events/${fileName}`).then(event => {
+                const { name, once, run }: EventType<keyof ClientEvents> = event.default;
 
                 try {
                     if (name) (once) ? this.once(name, run) : this.on(name, run);
                 } catch (error) {
-                    console.log(`An error occurred on event: ${name} \n${error}`);
+                    console.log(`An error occurred on event: ${fileName} \n${error}`);
                 }
             });
 
