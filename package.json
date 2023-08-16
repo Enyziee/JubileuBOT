@@ -2,10 +2,12 @@
   "name": "jubileubot",
   "version": "1.0.0",
   "description": "Essa é uma nova versão do BOT [Jubileu] feita em JavaScript e como algumas impletações novas",
-  "main": "src/app.js",
+  "main": "src/app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node ./out/app.js"
+    "start": "tsc && node ./dist/app.js",
+    "deploy": "tsc && node ./dist/deployCommands.js",
+    "clear": "rm -rf dist/"
   },
   "repository": {
     "type": "git",

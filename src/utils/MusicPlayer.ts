@@ -1,17 +1,19 @@
 import { AudioPlayer, AudioPlayerError, AudioPlayerStatus, NoSubscriberBehavior, VoiceConnection, VoiceConnectionStatus, createAudioPlayer, createAudioResource, entersState, getVoiceConnection, joinVoiceChannel } from '@discordjs/voice';
-import Queue from './Queue';
 import { Guild } from 'discord.js';
 import playdl, { InfoData } from 'play-dl';
+import Queue from './Queue.js';
 
-export class MusicPlayer {
+import { EventEmitter } from 'events';
+
+export class MusicPlayer extends EventEmitter {
     private playlist: Queue;
     private player: AudioPlayer | undefined;
     private guild: Guild;
-    private timeoutId: NodeJS.Timeout | undefined;
 
     public playing: boolean;
 
     public constructor(guild: Guild) {
+        super();
         this.playlist = new Queue();
         this.guild = guild;
         this.playing = false;
@@ -27,6 +29,7 @@ export class MusicPlayer {
         }
 
         if (this.player == undefined) {
+            console.log('Creating new player');
             this.player = this.createAudioPlayer();
         } else {
             console.log('Using existent player');
@@ -36,11 +39,6 @@ export class MusicPlayer {
     }
 
     public async playNow(query: string): Promise<InfoData> {
-        if (!(this.timeoutId == undefined)) {
-            console.log('Timeout cleared');
-            clearTimeout(this.timeoutId);
-        }
-
         const stream = await playdl.stream(query);
         const resource = createAudioResource(stream.stream, {
             inputType: stream.type,
@@ -54,11 +52,19 @@ export class MusicPlayer {
         return info;
     }
 
-    private async playNext() {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const query = this.playlist.dequeue();
+    public async playNext(): Promise<InfoData> {
+        const query: string | undefined = this.playlist.dequeue();
+
+        if (query == undefined) {
+            throw ("Nothing in playlist!");
+        }
+
         const info = await this.playNow(query);
         return info;
+    }
+
+    public hasNextSong(): boolean {
+        return !this.playlist.isEmpty();
     }
 
     public async addToPlaylist(query: string): Promise<InfoData> {
@@ -97,16 +103,8 @@ export class MusicPlayer {
                     await this.playNext();
                     return;
                 }
-                this.playing = false;
-                console.log('Timeout timer start');
-                this.timeoutId = setTimeout((musicPlayer: MusicPlayer) => {
-                    console.log('Timeout finished');
 
-                    musicPlayer.playing = false;
-                    musicPlayer.player?.stop();
-                    musicPlayer.player = undefined;
-                    getVoiceConnection(musicPlayer.guild.id)?.destroy();
-                }, 10000, this);
+                this.destroy();
             }
         });
 
@@ -134,7 +132,8 @@ export class MusicPlayer {
             }
             catch (error) {
                 // Seems to be a real disconnect which SHOULDN'T be recovered from
-                connection.destroy();
+                console.log("Bot disconnected!");
+                this.destroy();
             }
         });
 
@@ -152,10 +151,11 @@ export class MusicPlayer {
 
     public destroy() {
         console.log('Destroying Player!');
+        this.emit("destroy");
 
+        this.playing = false;
         this.player?.stop();
         this.player = undefined;
-        this.playing = false;
 
         const connection = getVoiceConnection(this.guild.id);
         connection?.destroy();
