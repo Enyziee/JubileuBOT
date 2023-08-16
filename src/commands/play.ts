@@ -32,23 +32,25 @@ export default new Command({
         }
 
         player.on("destroy", () => {
-            console.log("Event emitter: destroy players");
+            console.log("Event emitter: destroying player");
             client.players.delete(guild.id);
         });
 
         if (player.playing) {
             const info = await player.addToPlaylist(options.getString("query")!);
-            await interaction.reply({ content: `Adicionado a fila \`${info.video_details.title}\`` });
+            await interaction.reply({ content: `Adicionado a fila: \`${info.video_details.title}\`` });
             return;
         }
 
         try {
             const info = await player.playNow(options.getString("query")!);
             await interaction.reply({ content: `Reproduzingo agora: \`${info.video_details.title}\`` });
-        } catch (error) {
+        } catch (err) {
             player.destroy();
-            await interaction.reply({ content: `Ocorreu algum problema \`${error}\`` });
-            console.error(error);
+            if (err instanceof Error) {
+                await interaction.reply({ content: `Ocorreu um problema: \`${err.message}\`` });
+            }
+            console.error(err);
         }
     }
 });

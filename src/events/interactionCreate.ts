@@ -8,7 +8,7 @@ export default new Event({
         if (!interaction.isCommand()) return;
         const command = client.commands.get(interaction.commandName);
         if (!command) return;
-        console.log(`Command [${command.name}] invoked`);
+        console.log(`Command [${command.name}] invoked on ${interaction.guild?.name}`);
         const options = interaction.options as CommandInteractionOptionResolver;
         command.run({ client, interaction, options });
     },

@@ -23,7 +23,6 @@ export class MusicPlayer extends EventEmitter {
         let connection = getVoiceConnection(this.guild.id);
 
         if (connection == undefined) {
-            console.log('Creating new connection');
             connection = this.createVoiceConnection(channelId);
         } else {
             console.log('Using existent connection');
