@@ -1,13 +1,16 @@
-FROM node:18-alpine
+FROM node:lts-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
 COPY package.json ./
-
 RUN apk add build-base make autoconf automake libtool libsodium python3
+RUN yarn install
 
-RUN npm install -p
+COPY src/ src/
+COPY tsconfig.json .
+RUN yarn global add typescript
+RUN tsc
 
-COPY . .
+ENV NODE_ENV=production
 
-CMD [ "node", "./src/app.js" ]
+CMD [ "node", "./dist/app.js" ]
