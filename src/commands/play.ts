@@ -23,6 +23,8 @@ export default new Command({
             return;
         }
 
+        await interaction.deferReply();
+
         let player = client.players.get(guild.id);
 
         if (player == undefined) {
@@ -38,17 +40,17 @@ export default new Command({
 
         if (player.playing) {
             const info = await player.addToPlaylist(options.getString("query")!);
-            await interaction.reply({ content: `Adicionado a fila: \`${info.video_details.title}\`` });
+            await interaction.editReply({ content: `Adicionado a fila: \`${info.video_details.title}\`` });
             return;
         }
 
         try {
             const info = await player.playNow(options.getString("query")!);
-            await interaction.reply({ content: `Reproduzingo agora: \`${info.video_details.title}\`` });
+            await interaction.editReply({ content: `Reproduzingo agora: \`${info.video_details.title}\`` });
         } catch (err) {
             player.destroy();
             if (err instanceof Error) {
-                await interaction.reply({ content: `Ocorreu um problema: \`${err.message}\`` });
+                await interaction.editReply({ content: `Ocorreu um problema: \`${err.message}\`` });
             }
             console.error(err);
         }
