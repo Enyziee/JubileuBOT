@@ -1,4 +1,7 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, GuildMember } from "discord.js";
+
+import { getVoiceConnection } from "@discordjs/voice"
+
 import { client } from "../app.js";
 import { Command } from "../types/Command.js";
 import { MusicPlayer } from "../utils/MusicPlayer.js";
@@ -15,6 +18,8 @@ export default new Command({
     }],
 
     async run({ interaction, options }) {
+        await interaction.deferReply();
+        
         const member = interaction.member as GuildMember;
         const guild = interaction.guild!;
 
@@ -23,14 +28,25 @@ export default new Command({
             return;
         }
 
-        await interaction.deferReply();
-
         let player = client.players.get(guild.id);
 
         if (player == undefined) {
             player = new MusicPlayer(guild);
             client.players.set(guild.id, player);
-            player.joinVoiceChannel(member.voice.channelId!);
+        }
+
+        // Verify if the content of the URL is playable 
+
+        const playable = await player.isPlayable(options.getString("query")!)
+
+        if (!playable) {
+            await interaction.reply("Esse vídeo não pode ser reproduzido")
+            return;
+        }
+
+
+        if (!getVoiceConnection(guild.id)) {
+            player.joinVoiceChannel(member.voice.channelId!)
         }
 
         player.on("destroy", () => {

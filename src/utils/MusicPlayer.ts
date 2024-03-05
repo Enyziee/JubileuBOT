@@ -1,6 +1,6 @@
 import { AudioPlayer, AudioPlayerError, AudioPlayerStatus, NoSubscriberBehavior, VoiceConnection, VoiceConnectionStatus, createAudioPlayer, createAudioResource, entersState, getVoiceConnection, joinVoiceChannel } from '@discordjs/voice';
 import { Guild } from 'discord.js';
-import playdl, { InfoData } from 'play-dl';
+import playdl, { InfoData, yt_validate } from 'play-dl';
 import Queue from './Queue.js';
 
 import { EventEmitter } from 'events';
@@ -18,6 +18,13 @@ export class MusicPlayer extends EventEmitter {
         this.guild = guild;
         this.playing = false;
     }
+
+    public test(query: string) {
+        if (query.startsWith("https://youtu.be/") && query.startsWith("https://youtu.be/")) {
+            
+        }
+    }
+
 
     public joinVoiceChannel(channelId: string) {
         let connection = getVoiceConnection(this.guild.id);
@@ -38,7 +45,29 @@ export class MusicPlayer extends EventEmitter {
         connection.subscribe(this.player);
     }
 
+    async isPlayable(url: string) {
+        try {
+            await playdl.video_basic_info(url)    
+            return true
+        } catch (error) {
+            console.warn("Sing in to confirm your age");
+            return false;
+        }
+    }
+
     public async playNow(query: string): Promise<InfoData> {
+        const validation: string | boolean = yt_validate(query);
+
+        if (!validation) {
+            throw Error("Query not valid");
+        } else if (validation === "playlist") {
+            
+        } else if (validation === "search") {
+            const video = await playdl.search(query)
+            console.log("gaytest")
+        }
+
+
         const stream = await playdl.stream(query);
         const resource = createAudioResource(stream.stream, {
             inputType: stream.type,

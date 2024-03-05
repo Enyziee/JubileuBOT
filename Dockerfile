@@ -1,16 +1,25 @@
-FROM node:lts-alpine
+FROM node:lts-alpine as dependencies
 
-WORKDIR /usr/app
+COPY package.json .
+RUN apk add --no-cache build-base make autoconf automake libtool libsodium python3
+RUN npm install --verbose 
 
-COPY package.json ./
-RUN apk add build-base make autoconf automake libtool libsodium python3
-RUN yarn install
+FROM node:lts-alpine as compilation
 
-COPY src/ src/
-COPY tsconfig.json .
-RUN yarn global add typescript
+COPY --from=dependencies node_modules/ node_modules/
+COPY . .
+RUN npm install -g --verbose typescript
 RUN tsc
 
-ENV NODE_ENV=production
+FROM node:lts-alpine
+
+COPY . .
+WORKDIR /app
+
+ENV TOKEN=${TOKEN}
+ENV NODE_ENV=prod
+
+COPY --from=dependencies node_modules/ node_modules/
+COPY --from=compilation dist/ dist/
 
 CMD [ "node", "./dist/app.js" ]

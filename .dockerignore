@@ -1,5 +1,6 @@
-.env
-.vscode
+.vscode/
 .data/
-package-lock.json
+dist/
 node_modules/
+.env
+package-lock.json

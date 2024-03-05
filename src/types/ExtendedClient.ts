@@ -29,7 +29,22 @@ export class ExtendedClient extends Client {
     public start(): void {
         this.registerModules();
         this.registerEvents();
-        this.login(process.env.token);
+        
+        let TOKEN = undefined;
+
+        if (process.env.NODE_ENV === "prod") {
+            console.log("Starting BOT in Production")
+            TOKEN = process.env.TOKEN;
+        } else {
+            console.log("Starting BOT in Testing")
+            TOKEN = process.env.TEST_TOKEN;
+        }
+
+        if (!TOKEN) {
+            throw Error("Token not provided")
+        }
+
+        this.login(TOKEN);
     }
 
     private registerModules() {
