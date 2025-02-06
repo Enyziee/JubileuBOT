@@ -1,6 +1,15 @@
-# JubileuJS
-## Um simples BOT do discord que toca algumas músicas
+# jubileubot
 
-Essa é uma nova versão do BOT [Jubileu] feita em JavaScript e como algumas impletações novas
+To install dependencies:
 
-[Jubileu]: https://github.com/Enyziee/discord_bot 
+```bash
+bun install
+```
+
+To run:
+
+```bash
+bun run app.ts
+```
+
+This project was created using `bun init` in bun v1.2.2. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

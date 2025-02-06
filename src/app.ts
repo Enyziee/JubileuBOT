@@ -1,7 +1,6 @@
-import { ExtendedClient } from "./types/ExtendedClient.js";
-import 'dotenv/config';
+import { Client, IntentsBitField } from "discord.js";
+import "dotenv/config";
 
-const client = new ExtendedClient();
-client.start();
+const client = new Client({ intents: "GuildVoiceStates" });
 
-export { client };
+client.login(process.env.DISCORD_TOKEN);
