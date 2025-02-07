@@ -1,16 +1,32 @@
 {
-  "name": "jubileubot",
-  "module": "app.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest",
-    "dotenv": "^16.4.7"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@discordjs/voice": "^0.18.0",
-    "discord.js": "^14.17.3"
-  }
+	"$schema": "https://json.schemastore.org/package.json",
+	"name": "bot",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"lint": "tsc && prettier --check . && eslint --ext .ts --format=pretty src",
+		"deploy": "bun run src/util/deploy.ts",
+		"format": "prettier --write . && eslint --ext .ts --fix --format=pretty src",
+		"watch": "bun --watch run src/index.ts",
+		"start": "bun run src/index.ts"
+	},
+	"dependencies": {
+		"@discordjs/core": "^2.0.1",
+		"@discordjs/opus": "^0.10.0",
+		"@discordjs/voice": "^0.18.0",
+		"@distube/ytdl-core": "^4.16.0",
+		"discord.js": "^14.17.0",
+		"ffmpeg-static": "^5.2.0"
+	},
+	"devDependencies": {
+		"@sapphire/ts-config": "^5.0.1",
+		"@types/bun": "^1.1.14",
+		"eslint": "^8.57.1",
+		"eslint-config-neon": "^0.1.62",
+		"eslint-formatter-pretty": "^6.0.1",
+		"prettier": "^3.4.2",
+		"typescript": "~5.5.4",
+		"zod": "^3.24.1"
+	}
 }
